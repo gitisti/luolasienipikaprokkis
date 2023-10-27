@@ -29,6 +29,10 @@ public class ActionManager : MonoBehaviour
 
     [SerializeField] LayerMask layerMask;
     [SerializeField] List<Vector3> emptyPosition;
+    [SerializeField] LayerMask obstacleMask;
+
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -73,6 +77,15 @@ public class ActionManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+
+        var ray = playerTR.TransformDirection(Vector3.forward);
+        RaycastHit hit;
+        var pos = RoundedPosition(playerTR.position);
+
+
+        Debug.DrawRay(pos, ray * 50, Color.green);
+
         GetInput();
     }
 
@@ -82,30 +95,54 @@ public class ActionManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            SetWalkPosition(playerTR.position + Vector3.forward);
+            SetWalkPosition(playerTR.position + Vector3.forward, 0f);
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
-            SetWalkPosition(playerTR.position + Vector3.left);
+            SetWalkPosition(playerTR.position + Vector3.left, 270f);
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            SetWalkPosition(playerTR.position + Vector3.back);
+            SetWalkPosition(playerTR.position + Vector3.back, 180f);
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            SetWalkPosition(playerTR.position + Vector3.right);
+            SetWalkPosition(playerTR.position + Vector3.right, 90f);
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
-            //TODO: Find swappable block
-            //SetSwapPosition();
+
+            var ray = playerTR.TransformDirection(Vector3.forward) * 50f;
+            RaycastHit hit;
+            var pos = RoundedPosition(playerTR.position);
+
+
+            Debug.DrawRay(pos, ray, Color.green);
+
+
+
+            if (Physics.Raycast(pos, ray, out hit,50f, obstacleMask))
+            {
+
+
+
+                    Debug.Log("WwadawA");
+                    SetSwapPosition();
+                
+            }
+
+
+
         }
     }
 
-    void SetWalkPosition(Vector3 _walkPosition)
+    void SetWalkPosition(Vector3 _walkPosition, float angle = 0f)
     {
         //If walkposition = empty ->
+
+        playerTR.eulerAngles = new Vector3(0f, angle, 0f);
+
+
         if (emptyPosition.Contains(RoundedPosition(_walkPosition)))
         {
             playerWalkPosition = _walkPosition;
@@ -116,6 +153,9 @@ public class ActionManager : MonoBehaviour
 
     void SetSwapPosition()
     {
+
+        Debug.Log("AAA");
+
         //Set swappable block
         //Set swap position if swappable block is true
     }
