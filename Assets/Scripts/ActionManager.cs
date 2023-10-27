@@ -123,12 +123,7 @@ public class ActionManager : MonoBehaviour
 
             if (Physics.Raycast(pos, ray, out hit,50f, obstacleMask))
             {
-
-
-
-                    Debug.Log("WwadawA");
-                    SetSwapPosition();
-                
+                    SetSwapPosition(hit.transform);
             }
 
 
@@ -151,11 +146,21 @@ public class ActionManager : MonoBehaviour
         }
     }
 
-    void SetSwapPosition()
+    void SetSwapPosition(Transform _tr)
     {
 
-        Debug.Log("AAA");
+        Debug.Log(RoundedPosition(_tr.position));
 
+        emptyPosition.Add(RoundedPosition(_tr.position));
+
+        Vector3 oldPos = playerTR.position;
+        playerTR.position = _tr.position;
+        _tr.position = oldPos;
+
+
+
+        emptyPosition.Remove(RoundedPosition(_tr.position));
+        Debug.Log(RoundedPosition(_tr.position));
         //Set swappable block
         //Set swap position if swappable block is true
     }
