@@ -16,6 +16,9 @@ public class EnemyWander : MonoBehaviour
     public Vector3 GetGotoRota() => gotoRota;
     public Vector3 GetGotoPlace() => gotoPlace;
 
+    bool LERPING = true;
+    public void setLERPING(bool _bool) => LERPING = _bool;
+
     Transform tr;
 
     // Start is called before the first frame update
@@ -32,9 +35,11 @@ public class EnemyWander : MonoBehaviour
 
 
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(gotoRota), .3f);
-
-        gotoPlace.y = tr.localPosition.y;
-        tr.localPosition = Vector3.Lerp(tr.localPosition, gotoPlace, .3f);
+        if (LERPING)
+        {
+            gotoPlace.y = tr.localPosition.y;
+            tr.localPosition = Vector3.Lerp(tr.localPosition, gotoPlace, .3f);
+        }
     }
 
 

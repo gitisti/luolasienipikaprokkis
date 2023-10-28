@@ -39,6 +39,8 @@ public class ActionManager : MonoBehaviour
     [SerializeField] GameObject WolfVisualObj;
 
 
+    [SerializeField] Swapper swapper;
+
     [SerializeField] int LapsiAmount = 0;
 
     [SerializeField] List<EnemyWander> enemyWanderers;
@@ -46,6 +48,8 @@ public class ActionManager : MonoBehaviour
     GameObject eatThisChild = null;
     bool GameOver = false;
     bool Win = false;
+
+    bool waitForSwap = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -79,6 +83,8 @@ public class ActionManager : MonoBehaviour
 
         enemyWanderers.AddRange(FindObjectsOfType<EnemyWander>());
 
+        swapper = GetComponent<Swapper>();
+
     }
 
     void FindEmptyPositions()
@@ -106,6 +112,19 @@ public class ActionManager : MonoBehaviour
     void Update()
     {
         GetInput();
+
+
+        if (waitForSwap)
+        {
+            if (swapper.isDone)
+            {
+                swapper.isDone = false;
+                waitForSwap = false;
+                playerWalkPosition = playerTR.position;
+                StartCoroutine(DoAllActions());
+            }
+}
+
     }
 
     void GetInput()
@@ -135,18 +154,29 @@ public class ActionManager : MonoBehaviour
             RaycastHit hit;
             var pos = RoundedPosition(playerTR.position);
 
+            waitForSwap = true;
 
-
+            canDetectInput = false;
 
             if (Physics.Raycast(pos, ray, out hit, 50f, swappableMask))
             {
-                SetSwapPosition(hit.transform);
+                //SetSwapPosition(hit.transform);
+
+                bool isObstacle = (hit.collider.gameObject.GetComponent<EnemyWander>() == null);
+                if (isObstacle)
+                {
+                    emptyPosition.Remove(RoundedPosition(playerTR.position));
+                    emptyPosition.Add(RoundedPosition(hit.transform.position));
+                }
+                swapper.ACTIVATE(playerTR, hit.transform, wolfmove);
+
             }
 
 
 
         }
     }
+
 
 
     void CheckIfAChildCanBeEaten()
@@ -207,6 +237,9 @@ public class ActionManager : MonoBehaviour
 
     void SetSwapPosition(Transform _tr)
     {
+
+
+        canDetectInput = false;
 
         //here we check if the object we're changing places with isn't an enemy
         //by checking if they have the enemywander script or not
@@ -303,6 +336,13 @@ public class ActionManager : MonoBehaviour
 
         foreach (var e in enemyWanderers)
         {
+
+            if (e.transform.position.x == playerTR.position.x && e.transform.position.z == playerTR.position.z)
+            {
+                GameOver = true;
+                break;
+            }
+
             float rota = 0;
             var enemy = e.gameObject;
 
@@ -346,6 +386,7 @@ public class ActionManager : MonoBehaviour
 
                 e.SetGotoPlace(RoundedPosition(e.GetGotoPlace() + MoveVector));
                 e.SetGotoRota(enemy.transform.eulerAngles);
+                playerTR.position = RoundedPosition(playerTR.position);
 
                 if (e.GetGotoPlace().x==playerTR.position.x && e.GetGotoPlace().z == playerTR.position.z)    
                 {
