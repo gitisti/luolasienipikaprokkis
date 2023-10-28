@@ -15,6 +15,22 @@ public class ActionManager : MonoBehaviour
     //Rotate towards TargetPosition
     //Move to TargetPosition
 
+
+
+    delegate void DELE();
+
+    IEnumerator DoWithDelayEnu(float delay,DELE funkt)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        funkt();
+    }
+
+    void DoWithDelay(float delay, DELE funkt)
+    {
+        StartCoroutine(DoWithDelayEnu(delay, funkt));
+    }
+
+
     enum PlayerActionType
     {
         Walk,
@@ -58,6 +74,9 @@ public class ActionManager : MonoBehaviour
     bool noSwap = false;
 
 
+
+    FadeOut fadeout;
+
     GameObject gameOverBoat = null;
     // Start is called before the first frame update
     void Start()
@@ -78,6 +97,7 @@ public class ActionManager : MonoBehaviour
         var player = GameObject.FindGameObjectWithTag("Player");
         playerTR = player.transform;
 
+        fadeout = FindObjectOfType<FadeOut>();
         //hide the wolf from the player
         var oldwolf = player.GetComponentInChildren<WolfMove>().gameObject;
         Vector3 pos = oldwolf.transform.position;
@@ -391,9 +411,49 @@ public class ActionManager : MonoBehaviour
 
     void GameOverEvent() {
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        DoWithDelay(1.5f, () =>
+        {
+            fadeout.SetPhase(1);
+        });
+
+
+        DoWithDelay(2.5f, () =>
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        });
+
+
     }
 
-    void WinEvent() { }
+    void WinEvent() {
+
+
+
+        DoWithDelay(1.5f, () =>
+        {
+            fadeout.SetPhase(1);
+        });
+
+        if (SceneManager.sceneCount > SceneManager.GetActiveScene().buildIndex+1)
+        {
+
+            DoWithDelay(2.5f, () =>
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            });
+
+        }
+        else
+        {
+            DoWithDelay(2.5f, () =>
+            {
+                SceneManager.LoadScene(0);
+            });
+        }
+
+
+    }
 
 
 
