@@ -190,19 +190,19 @@ public class ActionManager : MonoBehaviour
     {
         if (!canDetectInput) { return; }
 
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
             SetWalkPosition(playerTR.position + Vector3.forward, 0f);
         }
-        else if (Input.GetKeyDown(KeyCode.A))
+        else if (Input.GetKeyDown(KeyCode.A)||Input.GetKeyDown(KeyCode.LeftArrow))
         {
             SetWalkPosition(playerTR.position + Vector3.left, 270f);
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+        else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
         {
             SetWalkPosition(playerTR.position + Vector3.back, 180f);
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
             SetWalkPosition(playerTR.position + Vector3.right, 90f);
         }
