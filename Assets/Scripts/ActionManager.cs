@@ -14,7 +14,8 @@ public class ActionManager : MonoBehaviour
     //Rotate towards TargetPosition
     //Move to TargetPosition
 
-    enum PlayerActionType {
+    enum PlayerActionType
+    {
         Walk,
         Swap,
         Error
@@ -23,6 +24,7 @@ public class ActionManager : MonoBehaviour
     #region PlayerStuff
     [SerializeField] bool canDetectInput = true;
     [SerializeField] Transform playerTR;
+    [SerializeField] WolfMove wolfmove;
     [SerializeField] Vector3 playerWalkPosition;
     [SerializeField] PlayerActionType playerActionType;
     #endregion
@@ -32,9 +34,12 @@ public class ActionManager : MonoBehaviour
     [SerializeField] LayerMask obstacleMask;
     [SerializeField] LayerMask lapsiMask;
 
+    [SerializeField] GameObject WolfVisualObj;
+
 
     [SerializeField] int LapsiAmount = 0;
 
+    [SerializeField] List<EnemyWander> enemyWanderers;
 
     GameObject eatThisChild = null;
     // Start is called before the first frame update
@@ -52,9 +57,24 @@ public class ActionManager : MonoBehaviour
 
     void SetEssentials()
     {
-        playerTR = GameObject.FindGameObjectWithTag("Player").transform;
+
+        var player = GameObject.FindGameObjectWithTag("Player");
+        playerTR = player.transform;
+
+        //hide the wolf from the player
+        var oldwolf = player.GetComponentInChildren<WolfMove>().gameObject;
+        Vector3 pos = oldwolf.transform.position;
+        oldwolf.SetActive(false);
+
+        wolfmove = Instantiate(WolfVisualObj).GetComponentInChildren<WolfMove>();
+        wolfmove.SetPlace(pos);
+        wolfmove.SetGotoPlace(wolfmove.transform.position);
+
         LapsiAmount = GameObject.FindGameObjectsWithTag("Lapsi").Length;
         playerTR.position = RoundedPosition(playerTR.position);
+
+        enemyWanderers.AddRange(FindObjectsOfType<EnemyWander>());
+
     }
 
     void FindEmptyPositions()
@@ -125,9 +145,9 @@ public class ActionManager : MonoBehaviour
 
 
 
-            if (Physics.Raycast(pos, ray, out hit,50f, obstacleMask))
+            if (Physics.Raycast(pos, ray, out hit, 50f, obstacleMask))
             {
-                    SetSwapPosition(hit.transform);
+                SetSwapPosition(hit.transform);
             }
 
 
@@ -138,23 +158,23 @@ public class ActionManager : MonoBehaviour
 
     void CheckIfAChildCanBeEaten()
     {
-       
-            var ray = playerTR.TransformDirection(Vector3.forward);
-            RaycastHit hit;
-            var pos = RoundedPosition(playerTR.position);
+
+        var ray = playerTR.TransformDirection(Vector3.forward);
+        RaycastHit hit;
+        var pos = RoundedPosition(playerTR.position);
 
 
-            Debug.DrawRay(pos, ray, Color.green);
+        // Debug.DrawRay(pos, ray, Color.green);
 
         eatThisChild = null;
 
-            if (Physics.Raycast(pos, ray, out hit, 1f, lapsiMask))
-            {
+        if (Physics.Raycast(pos, ray, out hit, 1f, lapsiMask))
+        {
 
             eatThisChild = hit.collider.gameObject;
 
-            }
-        
+        }
+
     }
 
     void SetWalkPosition(Vector3 _walkPosition, float angle = 0f)
@@ -162,7 +182,8 @@ public class ActionManager : MonoBehaviour
         //If walkposition = empty ->
 
         playerTR.eulerAngles = new Vector3(0f, angle, 0f);
-       
+        wolfmove.SetGotoRota(playerTR.eulerAngles + new Vector3(0, 90f, 0));
+
 
         if (emptyPosition.Contains(RoundedPosition(_walkPosition)))
         {
@@ -176,7 +197,6 @@ public class ActionManager : MonoBehaviour
     void SetSwapPosition(Transform _tr)
     {
 
-        Debug.Log(RoundedPosition(_tr.position));
 
         emptyPosition.Add(RoundedPosition(_tr.position));
 
@@ -184,10 +204,11 @@ public class ActionManager : MonoBehaviour
         playerTR.position = _tr.position;
         _tr.position = oldPos;
 
-
+        //move the wolf visual to this place)
+        wolfmove.SetPlace(RoundedPosition(playerTR.position));
+        wolfmove.SetGotoPlace(RoundedPosition(playerTR.position));
 
         emptyPosition.Remove(RoundedPosition(_tr.position));
-        Debug.Log(RoundedPosition(_tr.position));
         //Set swappable block
         //Set swap position if swappable block is true
     }
@@ -196,6 +217,7 @@ public class ActionManager : MonoBehaviour
     {
         canDetectInput = false;
         playerTR.position = playerWalkPosition;
+        wolfmove.SetGotoPlace(playerTR.position);
         //Do player action: walk, swap, error
         //wait for player animation to finish
 
@@ -203,6 +225,8 @@ public class ActionManager : MonoBehaviour
         EatTheChild();
 
         //Do enemy actions if player action is walk or swap
+
+        ActivateEnemyWanderers();
         //wait for enemy animations to finish
         //Game over if boat osu pelaajaan
         canDetectInput = true;
@@ -217,12 +241,67 @@ public class ActionManager : MonoBehaviour
 
     void EatTheChild()
     {
-       if (eatThisChild != null)
+        if (eatThisChild != null)
         {
             LapsiAmount -= 1;
             Destroy(eatThisChild);
         }
     }
 
+    void ActivateEnemyWanderers()
+    {
+
+
+        foreach (var e in enemyWanderers)
+        {
+            float rota = 0;
+            var enemy = e.gameObject;
+
+
+            RaycastHit hit;
+            var MoveVector = Vector3.zero;
+            var transpos = enemy.transform.position;
+
+            var _f = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.forward))));
+
+            var _b = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.back))));
+
+            var _r = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.right))));
+
+            var _l = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.left))));
+
+
+            if (_f)
+            {
+                if (_r) {
+                    rota = 90f; ;
+                    MoveVector = enemy.transform.TransformDirection(Vector3.right); }
+                else
+                {
+
+                    rota = 0f;
+                    MoveVector = enemy.transform.TransformDirection(Vector3.forward);
+                }
+
+            }
+            else if (_l) { MoveVector = enemy.transform.TransformDirection(Vector3.left); rota = -90f; }
+            else if (_b) { MoveVector = enemy.transform.TransformDirection(Vector3.back); rota = 180f; }
+
+
+
+            if (MoveVector != Vector3.zero)
+            {
+
+
+                enemy.transform.Rotate(new Vector3(0, rota, 0));
+                enemy.transform.position += MoveVector;
+            }
+
+
+        }
+
     }
+
+}
+
 
