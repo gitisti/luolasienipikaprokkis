@@ -29,24 +29,27 @@ public class Swapper : MonoBehaviour
     WolfMove wolf = null;
 
     bool ACTIVE = false;
-
+    GameObject obj;
     EnemyWander isEnemy = null;
 
     Vector3 GroundVector = new Vector3(0, -2, 0);
     public bool isDone = false;
+
+    public HandHandler hand;
+    bool handIsDone = false;
     void Start()
     {
        
     }
 
 
-    public void ACTIVATE(Transform _start, Transform _end,WolfMove _wolmove = null)
+    public void ACTIVATE(Transform _start, Transform _end,WolfMove _wolmove = null,GameObject _obj=null)
     {
 
         wolf = _wolmove;
         StartObj = _start.transform;
         EndObj = _end.transform;
-
+        obj = _obj;
 
         StartPos = RoundedPosition(StartObj.position);
         EndPos = RoundedPosition(EndObj.position);
@@ -62,7 +65,10 @@ public class Swapper : MonoBehaviour
         startRota = StartObj.eulerAngles;
         endRota = EndObj.eulerAngles;
 
-
+        if (_obj != null)
+        {
+            hand = _obj.GetComponent<HandHandler>();
+        }
 
 
         isEnemy = _end.GetComponent<EnemyWander>();
@@ -90,6 +96,9 @@ public class Swapper : MonoBehaviour
         {
 
             case 0:
+
+                if (!hand.handDone) { return; }
+
                 anima = Mathf.MoveTowards(anima, 1, animaSpeed * Time.deltaTime);
 
                 //StartObj.transform.localScale = startScale * (1f - anima);
@@ -107,7 +116,10 @@ public class Swapper : MonoBehaviour
                 //SWAP PLACES
                 if (anima == 1) { STATE = 1;
 
-
+                    if (obj != null)
+                    {
+                        Destroy(obj);
+                    }
                    
 
 

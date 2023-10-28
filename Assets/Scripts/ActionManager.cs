@@ -37,6 +37,7 @@ public class ActionManager : MonoBehaviour
     [SerializeField] LayerMask enemyMask;
 
     [SerializeField] GameObject WolfVisualObj;
+    [SerializeField] GameObject WolfVisualObjMine = null;
 
 
     [SerializeField] Swapper swapper;
@@ -45,11 +46,16 @@ public class ActionManager : MonoBehaviour
 
     [SerializeField] List<EnemyWander> enemyWanderers;
 
+
+    [SerializeField] GameObject handoObj;
+    [SerializeField] GameObject curHand = null;
+
     GameObject eatThisChild = null;
     bool GameOver = false;
     bool Win = false;
 
     bool waitForSwap = false;
+    bool noSwap = false;
 
 
     GameObject gameOverBoat = null;
@@ -77,7 +83,8 @@ public class ActionManager : MonoBehaviour
         Vector3 pos = oldwolf.transform.position;
         oldwolf.SetActive(false);
 
-        wolfmove = Instantiate(WolfVisualObj).GetComponentInChildren<WolfMove>();
+        WolfVisualObjMine = Instantiate(WolfVisualObj).GetComponentInChildren<BounceAnimation>().gameObject;
+        wolfmove = WolfVisualObjMine.GetComponentInChildren<WolfMove>();
         wolfmove.SetPlace(pos);
         wolfmove.SetGotoPlace(wolfmove.transform.position);
 
@@ -119,12 +126,27 @@ public class ActionManager : MonoBehaviour
 
         if (waitForSwap)
         {
+            if (noSwap && curHand != null && curHand.GetComponent<HandHandler>().handDone)
+            {
+                Destroy(curHand.gameObject);
+                swapper.isDone = false;
+                waitForSwap = false;
+                playerWalkPosition = playerTR.position;
+               // StartCoroutine(DoAllActions());
+
+                canDetectInput = true;
+                noSwap = false;
+                return;
+            }
+
             if (swapper.isDone)
             {
                 swapper.isDone = false;
                 waitForSwap = false;
                 playerWalkPosition = playerTR.position;
-                StartCoroutine(DoAllActions());
+
+                canDetectInput = true;
+                //StartCoroutine(DoAllActions());
             }
         }
         
@@ -165,7 +187,19 @@ public class ActionManager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Space))
         {
 
+            var hand = Instantiate(handoObj, wolfmove.transform);
+
+
+            curHand = hand;
+            int _len = 0;
+            var _pos = RoundedPosition(playerTR.position);
+            
+
+           // hand.transform.position = WolfVisualObjMine.transform.position;
+            //hand.transform.localEulerAngles = wolfmove.transform.localEulerAngles - new Vector3(0,180f,0);
+
             var ray = playerTR.TransformDirection(Vector3.forward) * 50f;
+            var _ray1 = playerTR.TransformDirection(Vector3.forward);
             RaycastHit hit;
             var pos = RoundedPosition(playerTR.position);
 
@@ -175,6 +209,12 @@ public class ActionManager : MonoBehaviour
 
             if (Physics.Raycast(pos, ray, out hit, 50f, swappableMask))
             {
+
+                hand.GetComponent<HandHandler>().SetGotoPos(Vector3.Distance(pos,hit.transform.position)+1);
+            
+                
+
+
                 //SetSwapPosition(hit.transform);
 
                 bool isObstacle = (hit.collider.gameObject.GetComponent<EnemyWander>() == null);
@@ -183,8 +223,13 @@ public class ActionManager : MonoBehaviour
                     emptyPosition.Remove(RoundedPosition(playerTR.position));
                     emptyPosition.Add(RoundedPosition(hit.transform.position));
                 }
-                swapper.ACTIVATE(playerTR, hit.transform, wolfmove);
+                swapper.ACTIVATE(playerTR, hit.transform, wolfmove,hand);
 
+            }
+            else
+            {
+                noSwap = true;
+                hand.GetComponent<HandHandler>().SetGotoPos(8);
             }
 
 
@@ -380,7 +425,27 @@ public class ActionManager : MonoBehaviour
 
             if (_f)
             {
-                if (_r) {
+                if (_r && _l)
+                {
+                    var _l2 = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.back)+ enemy.transform.TransformDirection(Vector3.left))));
+                    
+                    var _r2 = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.back) + enemy.transform.TransformDirection(Vector3.right))));
+
+                    if (_l2 && _r2)
+                    {
+                        rota = 0f; ;
+                        MoveVector = enemy.transform.TransformDirection(Vector3.forward);
+                    }
+                    else if (_l2)
+                    {
+                        MoveVector = enemy.transform.TransformDirection(Vector3.right); rota = -90f;
+                    }else if (_r2)
+                    {
+                        rota = 90f; ;
+                        MoveVector = enemy.transform.TransformDirection(Vector3.left);
+                    }
+                }
+                else if (_r) {
                     rota = 90f; ;
                     MoveVector = enemy.transform.TransformDirection(Vector3.right); }
                 else

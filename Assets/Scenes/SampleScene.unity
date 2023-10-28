@@ -7545,9 +7545,13 @@ MonoBehaviour:
     m_Bits: 0
   WolfVisualObj: {fileID: 5588612363989380929, guid: 55a2d1f4129b4154792595f2139c9092,
     type: 3}
+  WolfVisualObjMine: {fileID: 0}
   swapper: {fileID: 0}
   LapsiAmount: 0
   enemyWanderers: []
+  handoObj: {fileID: 3687125005340190513, guid: ae01149db30cd6a4a912783655802d5d,
+    type: 3}
+  curHand: {fileID: 0}
 --- !u!4 &1347048664
 Transform:
   m_ObjectHideFlags: 0
@@ -7574,7 +7578,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43cf7d6c19415464f8630beb1938d991, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animaSpeed: 10
+  isDone: 0
+  hand: {fileID: 0}
 --- !u!4 &1352126019 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7930083748620576335, guid: d7b8821e182921e46a4e6b88a02cf45b,

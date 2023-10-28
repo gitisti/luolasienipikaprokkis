@@ -106,6 +106,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 11560283129439853}
+  - component: {fileID: 1271337413568442094}
   m_Layer: 0
   m_Name: PARENTRANSFORM
   m_TagString: Untagged
@@ -128,6 +129,18 @@ Transform:
   m_Father: {fileID: 6768206459585726609}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1271337413568442094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3003749006411358818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a55ff04436500c44d9d7af8212f184fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5396672721477367026
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,7 +182,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6768206459585726609}
-  - component: {fileID: 2944007965040239575}
   m_Layer: 0
   m_Name: WolfVisual
   m_TagString: Untagged
@@ -192,22 +204,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2944007965040239575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5588612363989380929}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f9c1a753b79e2c4a91ad24fff5f6f38, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  modVector: {x: 0, y: 0.1, z: 0}
-  bouncespeed: 5
-  rotaVector: {x: 0, y: 0, z: 3}
-  rotaSpeed: 2
 --- !u!1 &7334712129482970935
 GameObject:
   m_ObjectHideFlags: 0
