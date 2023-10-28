@@ -136,6 +136,7 @@ public class ActionManager : MonoBehaviour
 
                 canDetectInput = true;
                 noSwap = false;
+                SetBoatArrows();
                 return;
             }
 
@@ -146,6 +147,7 @@ public class ActionManager : MonoBehaviour
                 playerWalkPosition = playerTR.position;
 
                 canDetectInput = true;
+                SetBoatArrows();
                 //StartCoroutine(DoAllActions());
             }
         }
@@ -210,7 +212,7 @@ public class ActionManager : MonoBehaviour
             if (Physics.Raycast(pos, ray, out hit, 50f, swappableMask))
             {
 
-                hand.GetComponent<HandHandler>().SetGotoPos(Vector3.Distance(pos,hit.transform.position)+1);
+                hand.GetComponent<HandHandler>().SetGotoPos(Vector3.Distance(pos,hit.transform.position)*1.25f+1);
             
                 
 
@@ -229,7 +231,9 @@ public class ActionManager : MonoBehaviour
             else
             {
                 noSwap = true;
+                
                 hand.GetComponent<HandHandler>().SetGotoPos(8);
+                hand.GetComponent<HandHandler>().GrabSomething=false;
             }
 
 
@@ -350,6 +354,7 @@ public class ActionManager : MonoBehaviour
             if (!Win)
             {
                 ActivateEnemyWanderers();
+                SetBoatArrows();
             }
         }
         //wait for enemy animations to finish
@@ -389,6 +394,88 @@ public class ActionManager : MonoBehaviour
     }
 
     void WinEvent() { }
+
+
+
+    void SetBoatArrows()
+    {
+        foreach (var e in enemyWanderers)
+        {
+
+            if (e.transform.position.x == playerTR.position.x && e.transform.position.z == playerTR.position.z)
+            {
+                e.setLERPING(false);
+                gameOverBoat = e.gameObject;
+                wolfmove.SetLERP(false);
+                GameOver = true;
+                break;
+            }
+
+            float rota = 0;
+            var enemy = e.gameObject;
+
+
+            RaycastHit hit;
+            var MoveVector = Vector3.zero;
+            var transpos = e.GetGotoPlace();
+
+            var _f = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.forward))));
+
+            var _b = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.back))));
+
+            var _r = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.right))));
+
+            var _l = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.left))));
+
+
+            if (_f)
+            {
+                if (_r && _l)
+                {
+                    var _l2 = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.back) + enemy.transform.TransformDirection(Vector3.left))));
+
+                    var _r2 = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.back) + enemy.transform.TransformDirection(Vector3.right))));
+
+                    if (_l2 && _r2)
+                    {
+                        rota = 0f; ;
+                        MoveVector = enemy.transform.TransformDirection(Vector3.forward);
+                    }
+                    else if (_l2)
+                    {
+                        MoveVector = enemy.transform.TransformDirection(Vector3.right); rota = 90f;
+                    }
+                    else if (_r2)
+                    {
+                        rota = -90f; ;
+                        MoveVector = enemy.transform.TransformDirection(Vector3.left);
+                    }
+                }
+                else if (_r)
+                {
+                    rota = 90f; ;
+                    MoveVector = enemy.transform.TransformDirection(Vector3.right);
+                }
+                else
+                {
+
+                    rota = 0f;
+                    MoveVector = enemy.transform.TransformDirection(Vector3.forward);
+                }
+
+            }
+            else if (_l) { MoveVector = enemy.transform.TransformDirection(Vector3.left); rota = -90f; }
+            else if (_b) { MoveVector = enemy.transform.TransformDirection(Vector3.back); rota = 180f; }
+
+
+
+                e.SetArrowRota(rota);
+
+            
+
+
+        }
+    }
 
     void ActivateEnemyWanderers()
     {
