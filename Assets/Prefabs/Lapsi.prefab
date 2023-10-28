@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2060441576861872213}
   - component: {fileID: 2060441576861872212}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2060441576861872210}
-  m_LocalRotation: {x: 0.19080894, y: 0, z: 0, w: 0.9816273}
+  m_LocalRotation: {x: 0.1778173, y: -0.3560186, z: 0.069202974, w: 0.91479105}
   m_LocalPosition: {x: 0, y: 0.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2060441577947713124}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 22, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 22, y: -42.53, z: 0}
 --- !u!212 &2060441576861872212
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -90,9 +90,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2060441577947713124}
-  m_Layer: 0
+  - component: {fileID: 178439202}
+  - component: {fileID: 9190764398912088139}
+  - component: {fileID: 1963401827}
+  m_Layer: 11
   m_Name: Lapsi
-  m_TagString: Untagged
+  m_TagString: Lapsi
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -112,3 +115,48 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -42.53, z: 0}
+--- !u!114 &178439202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2060441577947713125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f9c1a753b79e2c4a91ad24fff5f6f38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modVector: {x: 0, y: 0.1, z: 0}
+  bouncespeed: 5
+  rotaVector: {x: 0, y: 0, z: 0}
+  rotaSpeed: 2
+--- !u!65 &9190764398912088139
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2060441577947713125}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.6816697, y: 2.500826, z: 0.60981023}
+  m_Center: {x: -0.0030009747, y: -0.75041294, z: 0.0038022995}
+--- !u!114 &1963401827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2060441577947713125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f9c1a753b79e2c4a91ad24fff5f6f38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modVector: {x: 0, y: 0.1, z: 0}
+  bouncespeed: 5
+  rotaVector: {x: 0, y: 0, z: 0}
+  rotaSpeed: 2

@@ -30,10 +30,13 @@ public class ActionManager : MonoBehaviour
     [SerializeField] LayerMask layerMask;
     [SerializeField] List<Vector3> emptyPosition;
     [SerializeField] LayerMask obstacleMask;
+    [SerializeField] LayerMask lapsiMask;
 
 
+    [SerializeField] int LapsiAmount = 0;
 
 
+    GameObject eatThisChild = null;
     // Start is called before the first frame update
     void Start()
     {
@@ -50,6 +53,7 @@ public class ActionManager : MonoBehaviour
     void SetEssentials()
     {
         playerTR = GameObject.FindGameObjectWithTag("Player").transform;
+        LapsiAmount = GameObject.FindGameObjectsWithTag("Lapsi").Length;
         playerTR.position = RoundedPosition(playerTR.position);
     }
 
@@ -131,15 +135,38 @@ public class ActionManager : MonoBehaviour
         }
     }
 
+
+    void CheckIfAChildCanBeEaten()
+    {
+       
+            var ray = playerTR.TransformDirection(Vector3.forward);
+            RaycastHit hit;
+            var pos = RoundedPosition(playerTR.position);
+
+
+            Debug.DrawRay(pos, ray, Color.green);
+
+        eatThisChild = null;
+
+            if (Physics.Raycast(pos, ray, out hit, 1f, lapsiMask))
+            {
+
+            eatThisChild = hit.collider.gameObject;
+
+            }
+        
+    }
+
     void SetWalkPosition(Vector3 _walkPosition, float angle = 0f)
     {
         //If walkposition = empty ->
 
         playerTR.eulerAngles = new Vector3(0f, angle, 0f);
-
+       
 
         if (emptyPosition.Contains(RoundedPosition(_walkPosition)))
         {
+            CheckIfAChildCanBeEaten();
             playerWalkPosition = _walkPosition;
             playerActionType = PlayerActionType.Walk;
             StartCoroutine(DoAllActions());
@@ -171,6 +198,10 @@ public class ActionManager : MonoBehaviour
         playerTR.position = playerWalkPosition;
         //Do player action: walk, swap, error
         //wait for player animation to finish
+
+        //EAT THE CHILD
+        EatTheChild();
+
         //Do enemy actions if player action is walk or swap
         //wait for enemy animations to finish
         //Game over if boat osu pelaajaan
@@ -183,4 +214,15 @@ public class ActionManager : MonoBehaviour
         Vector3 roundedPosition = new Vector3(Mathf.Round(_position.x), 0, Mathf.Round(_position.z));
         return roundedPosition;
     }
-}
+
+    void EatTheChild()
+    {
+       if (eatThisChild != null)
+        {
+            LapsiAmount -= 1;
+            Destroy(eatThisChild);
+        }
+    }
+
+    }
+
