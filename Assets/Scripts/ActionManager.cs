@@ -50,6 +50,9 @@ public class ActionManager : MonoBehaviour
     bool Win = false;
 
     bool waitForSwap = false;
+
+
+    GameObject gameOverBoat = null;
     // Start is called before the first frame update
     void Start()
     {
@@ -123,7 +126,19 @@ public class ActionManager : MonoBehaviour
                 playerWalkPosition = playerTR.position;
                 StartCoroutine(DoAllActions());
             }
-}
+        }
+        
+            if (GameOver && gameOverBoat != null)
+            {
+            gameOverBoat.transform.Translate(Vector3.forward * Time.deltaTime * 10f
+                );
+
+                wolfmove.transform.position = gameOverBoat.transform.position+new Vector3(0,1,0);
+
+            }
+
+
+        
 
     }
 
@@ -325,7 +340,7 @@ public class ActionManager : MonoBehaviour
     }
 
     void GameOverEvent() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void WinEvent() { }
@@ -339,6 +354,9 @@ public class ActionManager : MonoBehaviour
 
             if (e.transform.position.x == playerTR.position.x && e.transform.position.z == playerTR.position.z)
             {
+                e.setLERPING(false);
+                gameOverBoat = e.gameObject;
+                wolfmove.SetLERP(false);
                 GameOver = true;
                 break;
             }
@@ -390,6 +408,9 @@ public class ActionManager : MonoBehaviour
 
                 if (e.GetGotoPlace().x==playerTR.position.x && e.GetGotoPlace().z == playerTR.position.z)    
                 {
+                    e.setLERPING(false);
+                    wolfmove.SetLERP(false);
+                    gameOverBoat = e.gameObject;
                     GameOver = true;
                     break;
                 }
