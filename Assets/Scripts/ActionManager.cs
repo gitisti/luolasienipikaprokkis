@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ActionManager : MonoBehaviour
 {
@@ -31,8 +32,9 @@ public class ActionManager : MonoBehaviour
 
     [SerializeField] LayerMask layerMask;
     [SerializeField] List<Vector3> emptyPosition;
-    [SerializeField] LayerMask obstacleMask;
+    [SerializeField] LayerMask swappableMask;
     [SerializeField] LayerMask lapsiMask;
+    [SerializeField] LayerMask enemyMask;
 
     [SerializeField] GameObject WolfVisualObj;
 
@@ -42,6 +44,8 @@ public class ActionManager : MonoBehaviour
     [SerializeField] List<EnemyWander> enemyWanderers;
 
     GameObject eatThisChild = null;
+    bool GameOver = false;
+    bool Win = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -101,15 +105,6 @@ public class ActionManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-
-        var ray = playerTR.TransformDirection(Vector3.forward);
-        RaycastHit hit;
-        var pos = RoundedPosition(playerTR.position);
-
-
-        Debug.DrawRay(pos, ray * 50, Color.green);
-
         GetInput();
     }
 
@@ -141,11 +136,9 @@ public class ActionManager : MonoBehaviour
             var pos = RoundedPosition(playerTR.position);
 
 
-            Debug.DrawRay(pos, ray, Color.green);
 
 
-
-            if (Physics.Raycast(pos, ray, out hit, 50f, obstacleMask))
+            if (Physics.Raycast(pos, ray, out hit, 50f, swappableMask))
             {
                 SetSwapPosition(hit.transform);
             }
@@ -177,7 +170,16 @@ public class ActionManager : MonoBehaviour
 
     }
 
-    void SetWalkPosition(Vector3 _walkPosition, float angle = 0f)
+    bool CheckIfIsGameOver()
+    {
+        var ray = playerTR.TransformDirection(Vector3.forward);
+        RaycastHit hit;
+        var pos = RoundedPosition(playerTR.position);
+
+        return Physics.Raycast(pos, ray, out hit, 1f, enemyMask);
+    }
+
+        void SetWalkPosition(Vector3 _walkPosition, float angle = 0f)
     {
         //If walkposition = empty ->
 
@@ -187,7 +189,16 @@ public class ActionManager : MonoBehaviour
 
         if (emptyPosition.Contains(RoundedPosition(_walkPosition)))
         {
-            CheckIfAChildCanBeEaten();
+            if (CheckIfIsGameOver())
+            {
+                GameOver = true;
+            }
+            else
+            {
+
+                CheckIfAChildCanBeEaten();
+            }
+            
             playerWalkPosition = _walkPosition;
             playerActionType = PlayerActionType.Walk;
             StartCoroutine(DoAllActions());
@@ -197,20 +208,36 @@ public class ActionManager : MonoBehaviour
     void SetSwapPosition(Transform _tr)
     {
 
+        //here we check if the object we're changing places with isn't an enemy
+        //by checking if they have the enemywander script or not
+        bool isEnemy = (_tr.gameObject.GetComponent<EnemyWander>() != null);
 
-        emptyPosition.Add(RoundedPosition(_tr.position));
-
+        if (!isEnemy)
+        {
+            emptyPosition.Add(RoundedPosition(_tr.position));
+        }
+        
         Vector3 oldPos = playerTR.position;
         playerTR.position = _tr.position;
         _tr.position = oldPos;
+        
+        if (isEnemy)
+        {
+
+            var obj = _tr.GetComponentInChildren<EnemyWander>();
+            obj.SetGotoPlace(oldPos);
+            obj.SetPlace(oldPos);
+        }
+      
 
         //move the wolf visual to this place)
         wolfmove.SetPlace(RoundedPosition(playerTR.position));
         wolfmove.SetGotoPlace(RoundedPosition(playerTR.position));
 
-        emptyPosition.Remove(RoundedPosition(_tr.position));
-        //Set swappable block
-        //Set swap position if swappable block is true
+        if (!isEnemy)
+        {
+            emptyPosition.Remove(RoundedPosition(_tr.position));
+        }
     }
 
     IEnumerator DoAllActions()
@@ -220,16 +247,31 @@ public class ActionManager : MonoBehaviour
         wolfmove.SetGotoPlace(playerTR.position);
         //Do player action: walk, swap, error
         //wait for player animation to finish
+        if (!GameOver)
+        {
+            //EAT THE CHILD
+            EatTheChild();
 
-        //EAT THE CHILD
-        EatTheChild();
-
-        //Do enemy actions if player action is walk or swap
-
-        ActivateEnemyWanderers();
+            yield return new WaitForSeconds(.1f);
+            //Do enemy actions if player action is walk or swap
+            if (!Win)
+            {
+                ActivateEnemyWanderers();
+            }
+        }
         //wait for enemy animations to finish
         //Game over if boat osu pelaajaan
+        if (!GameOver && !Win){ 
         canDetectInput = true;
+        }
+        else if (GameOver)
+        { 
+            GameOverEvent();
+        }
+        else
+        {
+            WinEvent();
+        }
         yield return null;
     }
 
@@ -245,8 +287,15 @@ public class ActionManager : MonoBehaviour
         {
             LapsiAmount -= 1;
             Destroy(eatThisChild);
+            Win = (LapsiAmount <= 0);
         }
     }
+
+    void GameOverEvent() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void WinEvent() { }
 
     void ActivateEnemyWanderers()
     {
@@ -260,7 +309,7 @@ public class ActionManager : MonoBehaviour
 
             RaycastHit hit;
             var MoveVector = Vector3.zero;
-            var transpos = enemy.transform.position;
+            var transpos = e.GetGotoPlace();
 
             var _f = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.forward))));
 
@@ -292,9 +341,17 @@ public class ActionManager : MonoBehaviour
             if (MoveVector != Vector3.zero)
             {
 
+                
+               enemy.transform.Rotate(new Vector3(0, rota, 0));
 
-                enemy.transform.Rotate(new Vector3(0, rota, 0));
-                enemy.transform.position += MoveVector;
+                e.SetGotoPlace(RoundedPosition(e.GetGotoPlace() + MoveVector));
+                e.SetGotoRota(enemy.transform.eulerAngles);
+
+                if (e.GetGotoPlace().x==playerTR.position.x && e.GetGotoPlace().z == playerTR.position.z)    
+                {
+                    GameOver = true;
+                    break;
+                }
             }
 
 
