@@ -56,6 +56,13 @@ public class ActionManager : MonoBehaviour
     [SerializeField] GameObject WolfVisualObjMine = null;
 
 
+
+    //lapset laittaa ittensä ja positionsa listalle, sit sielt etitää
+    [SerializeField] List<Vector3> lapsiPos;
+    [SerializeField] List<GameObject> lapset;
+
+
+
     [SerializeField] Swapper swapper;
 
     [SerializeField] int LapsiAmount = 0;
@@ -462,12 +469,15 @@ public class ActionManager : MonoBehaviour
         foreach (var e in enemyWanderers)
         {
 
-            if (e.transform.position.x == playerTR.position.x && e.transform.position.z == playerTR.position.z)
+            var pospos = RoundedPosition(e.transform.position);
+
+            if (pospos.x == playerWalkPosition.x && pospos.z == playerWalkPosition.z)
             {
                 e.setLERPING(false);
                 gameOverBoat = e.gameObject;
                 wolfmove.SetLERP(false);
                 GameOver = true;
+                return;
                 break;
             }
 
