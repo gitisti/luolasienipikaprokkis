@@ -609,8 +609,8 @@ public class ActionManager : MonoBehaviour
 
                     if (_l2 && _r2)
                     {
-                        rota = 0f; ;
-                        MoveVector = enemy.transform.TransformDirection(Vector3.forward);
+                        rota = 90f; ;
+                        MoveVector = enemy.transform.TransformDirection(Vector3.right);
                     }
                     else if (_l2)
                     {
