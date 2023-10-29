@@ -386,8 +386,6 @@ public class ActionManager : MonoBehaviour
     {
         //If walkposition = empty ->
 
-        playerTR.eulerAngles = new Vector3(0f, angle, 0f);
-        wolfmove.SetGotoRota(playerTR.eulerAngles + new Vector3(0, 90f, 0));
 
 
         if (emptyPosition.Contains(RoundedPosition(_walkPosition)))
@@ -401,6 +399,11 @@ public class ActionManager : MonoBehaviour
 
                 CheckIfAChildCanBeEaten();
             }
+
+
+            playerTR.eulerAngles = new Vector3(0f, angle, 0f);
+            wolfmove.SetGotoRota(playerTR.eulerAngles + new Vector3(0, 90f, 0));
+
             au.PlayOneShot(MOVE);
             playerWalkPosition = _walkPosition;
             playerActionType = PlayerActionType.Walk;
@@ -502,7 +505,7 @@ public class ActionManager : MonoBehaviour
 
             LapsiAmount -= 1;
             Destroy(eatThisChild);
-            Win = (LapsiAmount <= 0);
+            Win = ((LapsiAmount <= 0) && !GameOver);
         }
     }
 
