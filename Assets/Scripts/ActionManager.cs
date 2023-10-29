@@ -360,9 +360,9 @@ public class ActionManager : MonoBehaviour
         var pos = RoundedPosition(playerTR.position);
 
 
-        // Debug.DrawRay(pos, ray, Color.green);
 
         eatThisChild = null;
+
 
         if (Physics.Raycast(pos, ray, out hit, 1f, lapsiMask))
         {
@@ -386,7 +386,7 @@ public class ActionManager : MonoBehaviour
     {
         //If walkposition = empty ->
 
-
+        bool aa = false;
 
         if (emptyPosition.Contains(RoundedPosition(_walkPosition)))
         {
@@ -396,13 +396,18 @@ public class ActionManager : MonoBehaviour
             }
             else
             {
-
-                CheckIfAChildCanBeEaten();
+                aa = true;
             }
 
 
             playerTR.eulerAngles = new Vector3(0f, angle, 0f);
             wolfmove.SetGotoRota(playerTR.eulerAngles + new Vector3(0, 90f, 0));
+
+            if (aa)
+            {
+
+                CheckIfAChildCanBeEaten();
+            }
 
             au.PlayOneShot(MOVE);
             playerWalkPosition = _walkPosition;
@@ -810,6 +815,7 @@ public class ActionManager : MonoBehaviour
                     GameObject _lapsilapsi = null;
                     foreach(var a in lapset)
                     {
+                        if (a != null) { 
                         if (RoundedPosition(a.transform.position) == _p){
                             au.PlayOneShot(ONO[Random.Range(0,ONO.Count)]);
                             itWasChild = true;
@@ -818,6 +824,7 @@ public class ActionManager : MonoBehaviour
                             e.setLERPING(false);
                             gameOverBoat = e.gameObject;
                             GameOver = true;
+                        }
                         }
                     }
                 }
