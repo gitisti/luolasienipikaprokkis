@@ -75,6 +75,7 @@ public class ActionManager : MonoBehaviour
     [SerializeField] GameObject curHand = null;
 
     [SerializeField] Image YEETED;
+    [SerializeField] Image CHILDED;
 
     GameObject eatThisChild = null;
     bool GameOver = false;
@@ -91,6 +92,19 @@ public class ActionManager : MonoBehaviour
     FadeOut fadeout;
 
     GameObject gameOverBoat = null;
+
+    [SerializeField] AudioClip SUSI;
+    [SerializeField] AudioClip MOVE;
+    [SerializeField] AudioClip SUSIOUT;
+    [SerializeField] List<AudioClip> ONO;
+    [SerializeField] AudioClip BOAT;
+    [SerializeField] AudioClip TELE;
+    [SerializeField] AudioClip ARM;
+    [SerializeField] AudioClip GAMEO;
+    [SerializeField] AudioClip ROTATE;
+    [SerializeField] AudioClip WIN;
+    [SerializeField] AudioSource au;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -106,7 +120,7 @@ public class ActionManager : MonoBehaviour
 
     void SetEssentials()
     {
-
+        au = GetComponent<AudioSource>();
         var player = GameObject.FindGameObjectWithTag("Player");
         playerTR = player.transform;
 
@@ -164,6 +178,10 @@ public class ActionManager : MonoBehaviour
     void Update()
     {
         GetInput();
+
+        
+        if (Input.GetKeyDown(KeyCode.E)) { au.PlayOneShot(ROTATE); }
+        if (Input.GetKeyDown(KeyCode.Q)) { au.PlayOneShot(ROTATE); }
 
 
         if (waitForSwap)
@@ -271,6 +289,9 @@ public class ActionManager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Space))
         {
 
+
+            au.PlayOneShot(ARM);
+
             var hand = Instantiate(handoObj, wolfmove.transform);
 
 
@@ -307,6 +328,8 @@ public class ActionManager : MonoBehaviour
                     emptyPosition.Remove(RoundedPosition(playerTR.position));
                     emptyPosition.Add(RoundedPosition(hit.transform.position));
                 }
+                au.PlayOneShot(TELE);
+
                 swapper.ACTIVATE(playerTR, hit.transform, wolfmove,hand);
 
             }
@@ -374,7 +397,7 @@ public class ActionManager : MonoBehaviour
 
                 CheckIfAChildCanBeEaten();
             }
-            
+            au.PlayOneShot(MOVE);
             playerWalkPosition = _walkPosition;
             playerActionType = PlayerActionType.Walk;
             StartCoroutine(DoAllActions());
@@ -465,6 +488,8 @@ public class ActionManager : MonoBehaviour
     {
         if (eatThisChild != null)
         {
+            au.PlayOneShot(SUSI);
+
             LapsiAmount -= 1;
             Destroy(eatThisChild);
             Win = (LapsiAmount <= 0);
@@ -473,11 +498,28 @@ public class ActionManager : MonoBehaviour
 
     void GameOverEvent() {
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        au.PlayOneShot(BOAT);
+
+        DoWithDelay(1f, () =>
+         {
+             au.PlayOneShot(GAMEO);
+         });
 
         DoWithDelay(1.5f, () =>
         {
             fadeout.SetPhase(1);
-            fadeout.setGameOverImage(YEETED);
+        
+
+            if (itWasChild)
+            {
+
+                fadeout.setGameOverImage(CHILDED);
+            }
+            else
+            {
+
+                fadeout.setGameOverImage(YEETED);
+            }
         });
 
 
@@ -496,7 +538,7 @@ public class ActionManager : MonoBehaviour
     void WinEvent() {
 
 
-
+        au.PlayOneShot(WIN);
         DoWithDelay(1.5f, () =>
         {
             fadeout.SetPhase(1);
@@ -505,7 +547,7 @@ public class ActionManager : MonoBehaviour
         if (SceneManager.sceneCount > SceneManager.GetActiveScene().buildIndex+1)
         {
 
-            DoWithDelay(2.5f, () =>
+            DoWithDelay(3f, () =>
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             });
@@ -513,7 +555,7 @@ public class ActionManager : MonoBehaviour
         }
         else
         {
-            DoWithDelay(2.5f, () =>
+            DoWithDelay(3f, () =>
             {
                 SceneManager.LoadScene(0);
             });
@@ -531,15 +573,7 @@ public class ActionManager : MonoBehaviour
 
             var pospos = RoundedPosition(e.transform.position);
 
-            if (pospos.x == playerWalkPosition.x && pospos.z == playerWalkPosition.z)
-            {
-                e.setLERPING(false);
-                gameOverBoat = e.gameObject;
-                wolfmove.SetLERP(false);
-                GameOver = true;
-                return;
-                break;
-            }
+           
 
             float rota = 0;
             var enemy = e.gameObject;
@@ -645,6 +679,7 @@ public class ActionManager : MonoBehaviour
 
             if (e.transform.position.x == playerTR.position.x && e.transform.position.z == playerTR.position.z)
             {
+                au.PlayOneShot(SUSIOUT);
                 e.setLERPING(false);
                 gameOverBoat = e.gameObject;
                 wolfmove.SetLERP(false);
@@ -745,8 +780,9 @@ public class ActionManager : MonoBehaviour
                 e.SetGotoRota(enemy.transform.eulerAngles);
                 playerTR.position = RoundedPosition(playerTR.position);
 
-                if (e.GetGotoPlace().x==playerTR.position.x && e.GetGotoPlace().z == playerTR.position.z)    
+                if (e.GetGotoPlace().x==playerTR.position.x && e.GetGotoPlace().z == playerTR.position.z)
                 {
+                    au.PlayOneShot(SUSIOUT);
                     e.setLERPING(false);
                     wolfmove.SetLERP(false);
                     gameOverBoat = e.gameObject;
@@ -762,7 +798,7 @@ public class ActionManager : MonoBehaviour
                     foreach(var a in lapset)
                     {
                         if (RoundedPosition(a.transform.position) == _p){
-
+                            au.PlayOneShot(ONO[Random.Range(0,ONO.Count)]);
                             itWasChild = true;
                             a.transform.parent = e.gameObject.transform;
                             a.transform.localPosition = Vector3.zero;
