@@ -143,7 +143,7 @@ public class MainMenu : MonoBehaviour
                                 au.PlayOneShot(START2);
                             });
 
-                            DoWithDelay(7f, () =>
+                            DoWithDelay(9f, () =>
                             {
                                 SceneManager.LoadScene(1);
                             });
