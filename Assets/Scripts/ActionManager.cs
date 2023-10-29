@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ActionManager : MonoBehaviour
 {
@@ -72,6 +73,8 @@ public class ActionManager : MonoBehaviour
 
     [SerializeField] GameObject handoObj;
     [SerializeField] GameObject curHand = null;
+
+    [SerializeField] Image YEETED;
 
     GameObject eatThisChild = null;
     bool GameOver = false;
@@ -197,6 +200,7 @@ public class ActionManager : MonoBehaviour
                 wolfmove.transform.position = gameOverBoat.transform.position+new Vector3(0,1,0);
             }
         }
+
 
 
         
@@ -432,13 +436,18 @@ public class ActionManager : MonoBehaviour
         DoWithDelay(1.5f, () =>
         {
             fadeout.SetPhase(1);
+            fadeout.setGameOverImage(YEETED);
         });
 
 
-        DoWithDelay(2.5f, () =>
+
+        DoWithDelay(3.5f, () =>
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         });
+
+
+
 
 
     }

@@ -15,6 +15,11 @@ public class FadeOut : MonoBehaviour
 
     bool isDone = false;
 
+
+    [SerializeField] Image GameOverImage = null;
+
+    public void setGameOverImage(Image i) => GameOverImage = i;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,6 +39,13 @@ public class FadeOut : MonoBehaviour
         Color col = Color.black;
         col.a = alpha;
         fadeOuter.color = col;
+
+        if (GameOverImage != null)
+        {
+            col = Color.white;
+            col.a = alpha;
+            GameOverImage.color = col;
+        }
 
         if (alpha == phase) { isDone = true; }
         
