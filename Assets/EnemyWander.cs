@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class EnemyWander : MonoBehaviour
 {
-
+    public void SetArrowRota(float rota)
+    {
+        Arrow.transform.localEulerAngles = new Vector3(0,rota,0);
+    }
 
     [SerializeField] Vector3 gotoPlace;
     [SerializeField] Vector3 gotoRota;
@@ -15,6 +18,11 @@ public class EnemyWander : MonoBehaviour
     public void SetRota(Vector3 _rota) => transform.localEulerAngles = _rota;
     public Vector3 GetGotoRota() => gotoRota;
     public Vector3 GetGotoPlace() => gotoPlace;
+
+    bool LERPING = true;
+    public void setLERPING(bool _bool) => LERPING = _bool;
+
+    [SerializeField] GameObject Arrow;
 
     Transform tr;
 
@@ -29,12 +37,14 @@ public class EnemyWander : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+       
 
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(gotoRota), .3f);
-
-        gotoPlace.y = tr.localPosition.y;
-        tr.localPosition = Vector3.Lerp(tr.localPosition, gotoPlace, .3f);
+        if (LERPING)
+        {
+            gotoPlace.y = tr.localPosition.y;
+            tr.localPosition = Vector3.Lerp(tr.localPosition, gotoPlace, .3f);
+        }
     }
 
 
