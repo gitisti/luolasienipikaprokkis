@@ -903,6 +903,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lapsi
       objectReference: {fileID: 0}
+    - target: {fileID: 2060441577947713125, guid: 615d2c0cae0139742813aafd114097b0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 615d2c0cae0139742813aafd114097b0, type: 3}
 --- !u!1 &285310745
@@ -8158,6 +8163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43cf7d6c19415464f8630beb1938d991, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TPVF: {fileID: 75320110527202981, guid: 1fab7ce768a90824aafb4e6b5c90e676, type: 3}
   isDone: 0
   hand: {fileID: 0}
 --- !u!4 &1352126019 stripped
@@ -13175,6 +13181,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Lapsi
+      objectReference: {fileID: 0}
+    - target: {fileID: 2060441577947713125, guid: 615d2c0cae0139742813aafd114097b0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 615d2c0cae0139742813aafd114097b0, type: 3}
