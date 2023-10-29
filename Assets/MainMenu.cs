@@ -22,6 +22,10 @@ public class MainMenu : MonoBehaviour
     [SerializeField] GameObject text;
     [SerializeField] Image fadeOutter;
 
+    [SerializeField] AudioClip MOVE;
+    [SerializeField] AudioClip START;
+
+    [SerializeField] AudioSource au;
 
     int PHASE = 0;
 
@@ -51,6 +55,7 @@ public class MainMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        au = GetComponent<AudioSource>();
         startButton.color = Color.white;
         quitButton.color = colorUnselected;
 
@@ -76,6 +81,9 @@ public class MainMenu : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
                 {
+
+                    au.PlayOneShot(MOVE);
+
                     switch (selected)
                     {
                         case 0:
@@ -99,6 +107,7 @@ public class MainMenu : MonoBehaviour
                 }
                 else if (Input.GetKeyDown(KeyCode.Space))
                 {
+                    au.PlayOneShot(START);
                     PHASE = 1;
                 }
         
