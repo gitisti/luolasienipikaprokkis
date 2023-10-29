@@ -562,22 +562,15 @@ public class ActionManager : MonoBehaviour
             fadeout.SetPhase(1);
         });
 
-        if (SceneManager.sceneCount > SceneManager.GetActiveScene().buildIndex+1)
-        {
+        
 
             DoWithDelay(3f, () =>
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             });
 
-        }
-        else
-        {
-            DoWithDelay(3f, () =>
-            {
-                SceneManager.LoadScene(0);
-            });
-        }
+       
+        
 
 
     }
