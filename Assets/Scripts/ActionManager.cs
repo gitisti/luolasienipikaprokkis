@@ -80,6 +80,7 @@ public class ActionManager : MonoBehaviour
     bool waitForSwap = false;
     bool noSwap = false;
 
+    bool itWasChild = false;
 
 
     FadeOut fadeout;
@@ -145,10 +146,11 @@ public class ActionManager : MonoBehaviour
         }
 
 
-        GameObject[] lapset = GameObject.FindGameObjectsWithTag("Lapsi");
-        for (int i = 0; i < tile.Length; i++)
+        GameObject[] lapsetarra = GameObject.FindGameObjectsWithTag("Lapsi");
+        for (int i = 0; i < lapsetarra.Length; i++)
         {
-
+            lapset.Add(lapsetarra[i]);
+            lapsiPos.Add(RoundedPosition(lapsetarra[i].transform.position));
         }
 
         }
@@ -191,10 +193,10 @@ public class ActionManager : MonoBehaviour
             {
             gameOverBoat.transform.Translate(Vector3.forward * Time.deltaTime * 10f
                 );
-
+            if (!itWasChild) { 
                 wolfmove.transform.position = gameOverBoat.transform.position+new Vector3(0,1,0);
-
             }
+        }
 
 
         
@@ -644,6 +646,26 @@ public class ActionManager : MonoBehaviour
                     GameOver = true;
                     break;
                 }
+
+                var _p = e.GetGotoPlace();
+
+                if (lapsiPos.Contains(_p))
+                {
+                    GameObject _lapsilapsi = null;
+                    foreach(var a in lapset)
+                    {
+                        if (RoundedPosition(a.transform.position) == _p){
+
+                            itWasChild = true;
+                            a.transform.parent = e.gameObject.transform;
+                            a.transform.localPosition = Vector3.zero;
+                            e.setLERPING(false);
+                            gameOverBoat = e.gameObject;
+                            GameOver = true;
+                        }
+                    }
+                }
+
             }
 
 

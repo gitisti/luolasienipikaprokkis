@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Swapper : MonoBehaviour
 {
+    [SerializeField] GameObject TPVF;
+
+    GameObject TP1 = null;
+    GameObject TP2 = null;
+
 
     Vector3 StartPos;
     Vector3 EndPos;
@@ -65,6 +70,14 @@ public class Swapper : MonoBehaviour
         startRota = StartObj.eulerAngles;
         endRota = EndObj.eulerAngles;
 
+
+
+        GameObject TP1 = Instantiate(TPVF);
+        GameObject TP2 = Instantiate(TPVF);
+        TP1.transform.position = StartPos;
+        TP2.transform.position = EndPos;
+
+
         if (_obj != null)
         {
             hand = _obj.GetComponent<HandHandler>();
@@ -84,6 +97,9 @@ public class Swapper : MonoBehaviour
         }
 
         ACTIVE = true;
+
+
+
 
     }
 
@@ -173,6 +189,9 @@ public class Swapper : MonoBehaviour
                     ACTIVE = false;
 
                     isDone = true;
+
+                    Destroy(TP1);
+                    Destroy(TP2);
                 }
                 break;
 
