@@ -103,6 +103,7 @@ public class ActionManager : MonoBehaviour
     [SerializeField] AudioClip GAMEO;
     [SerializeField] AudioClip ROTATE;
     [SerializeField] AudioClip WIN;
+    [SerializeField] List<AudioClip> LAUGH;
     [SerializeField] AudioSource au;
 
     // Start is called before the first frame update
@@ -488,7 +489,13 @@ public class ActionManager : MonoBehaviour
     {
         if (eatThisChild != null)
         {
+
             au.PlayOneShot(SUSI);
+            DoWithDelay(.25f, () =>
+            {
+
+                au.PlayOneShot(LAUGH[Random.Range(0, LAUGH.Count)]);
+            });
 
             LapsiAmount -= 1;
             Destroy(eatThisChild);

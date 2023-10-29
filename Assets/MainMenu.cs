@@ -24,6 +24,7 @@ public class MainMenu : MonoBehaviour
 
     [SerializeField] AudioClip MOVE;
     [SerializeField] AudioClip START;
+    [SerializeField] AudioClip START2;
 
     [SerializeField] AudioSource au;
 
@@ -123,6 +124,7 @@ public class MainMenu : MonoBehaviour
 
                 if (alpha == 1)
                 {
+                    PHASE++;
                     switch (selected)
                     {
                         case 0:
@@ -130,12 +132,15 @@ public class MainMenu : MonoBehaviour
                             DoWithDelay(1f, () =>
                             {
                                 text.SetActive(true);
+                                au.PlayOneShot(MOVE);
                             });
 
 
                             DoWithDelay(5f, () =>
                             {
                                 text.SetActive(false);
+
+                                au.PlayOneShot(START2);
                             });
 
                             DoWithDelay(7f, () =>
