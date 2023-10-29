@@ -67,7 +67,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Lumin: 0
+    - _Lumin: 0.39
     - _MaxLight: 1
     - _Metallic: 0
     - _MinLight: 0.6
@@ -78,12 +78,12 @@ Material:
     - _Segmented: 1
     - _ShnIntense: 0
     - _ShnOverlap: 0
-    - _ShnRange: 0.15
+    - _ShnRange: 0.244
     - _ShnSmooth: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Steps: 3
+    - _Steps: 2.6
     - _StpSmooth: 0
     - _UVSec: 0
     - _ZWrite: 1
