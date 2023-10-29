@@ -143,6 +143,9 @@ public class ActionManager : MonoBehaviour
 
         swapper = GetComponent<Swapper>();
 
+        wolfmove.SetGotoRota(playerTR.eulerAngles + new Vector3(0, 90f, 0));
+        wolfmove.SetRota(playerTR.eulerAngles + new Vector3(0, 90f, 0));
+
     }
 
     void FindEmptyPositions()
