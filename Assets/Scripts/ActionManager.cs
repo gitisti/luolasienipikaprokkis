@@ -143,7 +143,15 @@ public class ActionManager : MonoBehaviour
                 emptyPosition.Add(RoundedPosition(hit.transform.position));
             }
         }
-    }
+
+
+        GameObject[] lapset = GameObject.FindGameObjectsWithTag("Lapsi");
+        for (int i = 0; i < tile.Length; i++)
+        {
+
+        }
+
+        }
 
     // Update is called once per frame
     void Update()
