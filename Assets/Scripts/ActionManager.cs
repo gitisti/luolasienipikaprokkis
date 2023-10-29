@@ -86,6 +86,8 @@ public class ActionManager : MonoBehaviour
     bool itWasChild = false;
 
 
+    CameraRota camrot = null;
+
     FadeOut fadeout;
 
     GameObject gameOverBoat = null;
@@ -118,7 +120,7 @@ public class ActionManager : MonoBehaviour
         wolfmove = WolfVisualObjMine.GetComponentInChildren<WolfMove>();
         wolfmove.SetPlace(pos);
         wolfmove.SetGotoPlace(wolfmove.transform.position);
-
+        camrot = FindObjectOfType<CameraRota>();
         LapsiAmount = GameObject.FindGameObjectsWithTag("Lapsi").Length;
         playerTR.position = RoundedPosition(playerTR.position);
 
@@ -209,23 +211,62 @@ public class ActionManager : MonoBehaviour
 
     void GetInput()
     {
+        
+
         if (!canDetectInput) { return; }
+
+        var _destVect = Vector3.zero;
+        var _angler = 0f;
 
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            SetWalkPosition(playerTR.position + Vector3.forward, 0f);
+            switch (camrot.rota)
+            {
+                case 0: _destVect = Vector3.forward; _angler = 0f; break;
+                case 3: _destVect = Vector3.left; _angler = 270f; break;
+                case 2: _destVect = Vector3.back; _angler = 180f; break;
+                case 1: _destVect = Vector3.right; _angler = 90f; break;
+            }
+            SetWalkPosition(playerTR.position + _destVect, _angler);
         }
         else if (Input.GetKeyDown(KeyCode.A)||Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            SetWalkPosition(playerTR.position + Vector3.left, 270f);
+
+            switch (camrot.rota)
+            {
+                case 1: _destVect = Vector3.forward; _angler = 0f; break;
+                case 0: _destVect = Vector3.left; _angler = 270f; break;
+                case 3: _destVect = Vector3.back; _angler = 180f; break;
+                case 2: _destVect = Vector3.right; _angler = 90f; break;
+            }
+
+            SetWalkPosition(playerTR.position + _destVect, _angler);
         }
         else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            SetWalkPosition(playerTR.position + Vector3.back, 180f);
+
+            switch (camrot.rota)
+            {
+                case 2: _destVect = Vector3.forward; _angler = 0f; break;
+                case 1: _destVect = Vector3.left; _angler = 270f; break;
+                case 0: _destVect = Vector3.back; _angler = 180f; break;
+                case 3: _destVect = Vector3.right; _angler = 90f; break;
+            }
+
+
+            SetWalkPosition(playerTR.position + _destVect, _angler);
         }
         else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
-            SetWalkPosition(playerTR.position + Vector3.right, 90f);
+            switch (camrot.rota)
+            {
+                case 3: _destVect = Vector3.forward; _angler = 0f; break;
+                case 2: _destVect = Vector3.left; _angler = 270f; break;
+                case 1: _destVect = Vector3.back; _angler = 180f; break;
+                case 0: _destVect = Vector3.right; _angler = 90f; break;
+            }
+
+            SetWalkPosition(playerTR.position + _destVect, _angler);
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -517,6 +558,7 @@ public class ActionManager : MonoBehaviour
             var _l = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.left))));
 
 
+
             if (_f)
             {
                 if (_r && _l)
@@ -525,40 +567,68 @@ public class ActionManager : MonoBehaviour
 
                     var _r2 = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.back) + enemy.transform.TransformDirection(Vector3.right))));
 
+                    if (!_l2 && !_r2)
+                    {
+                        Debug.Log("A");
+                        rota = 90f; ;
+                        MoveVector = enemy.transform.TransformDirection(Vector3.right);
+                    }
                     if (_l2 && _r2)
                     {
-                        rota = 0f; ;
+                        Debug.Log("A2");
+                        rota = 0f;
                         MoveVector = enemy.transform.TransformDirection(Vector3.forward);
                     }
                     else if (_l2)
                     {
+                        Debug.Log("B");
                         MoveVector = enemy.transform.TransformDirection(Vector3.right); rota = 90f;
                     }
                     else if (_r2)
                     {
-                        rota = -90f; ;
+                        Debug.Log("C");
+                        rota = 90f; ;
                         MoveVector = enemy.transform.TransformDirection(Vector3.left);
+                    }
+                    else
+                    {
+                        Debug.Log("D");
+
+                        MoveVector = enemy.transform.TransformDirection(Vector3.right); rota = 90f;
                     }
                 }
                 else if (_r)
                 {
+                    Debug.Log("E");
                     rota = 90f; ;
                     MoveVector = enemy.transform.TransformDirection(Vector3.right);
                 }
                 else
                 {
 
+                    Debug.Log("F");
                     rota = 0f;
                     MoveVector = enemy.transform.TransformDirection(Vector3.forward);
                 }
 
             }
-            else if (_l) { MoveVector = enemy.transform.TransformDirection(Vector3.left); rota = -90f; }
-            else if (_b) { MoveVector = enemy.transform.TransformDirection(Vector3.back); rota = 180f; }
+            else if (_r)
+            {
+                Debug.Log("G2"); MoveVector = enemy.transform.TransformDirection(Vector3.right); rota = 90f;
+            }
+            else if (_l)
+            {
+                Debug.Log("G"); MoveVector = enemy.transform.TransformDirection(Vector3.left); rota = -90f;
+            }
+            else if (_b)
+            {
+                Debug.Log("H"); MoveVector = enemy.transform.TransformDirection(Vector3.back); rota = 180f;
+            }
 
 
 
-                e.SetArrowRota(rota);
+
+            e.SetArrowRota(rota);
 
             
 
@@ -589,7 +659,7 @@ public class ActionManager : MonoBehaviour
             RaycastHit hit;
             var MoveVector = Vector3.zero;
             var transpos = e.GetGotoPlace();
-
+            Debug.Log(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.forward)));
             var _f = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.forward))));
 
             var _b = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.back))));
@@ -598,6 +668,7 @@ public class ActionManager : MonoBehaviour
 
             var _l = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.left))));
 
+            Debug.Log(_f + " " + _b + " " + _r + " " + _l);
 
             if (_f)
             {
@@ -607,33 +678,60 @@ public class ActionManager : MonoBehaviour
                     
                     var _r2 = (emptyPosition.Contains(RoundedPosition(transpos + enemy.transform.TransformDirection(Vector3.back) + enemy.transform.TransformDirection(Vector3.right))));
 
-                    if (_l2 && _r2)
+                    if (!_l2 && !_r2)
                     {
+                        Debug.Log("A");
                         rota = 90f; ;
                         MoveVector = enemy.transform.TransformDirection(Vector3.right);
                     }
+                    if (_l2 && _r2)
+                    {
+                        Debug.Log("A2");
+                        rota = 0f;
+                        MoveVector = enemy.transform.TransformDirection(Vector3.forward);
+                    }
                     else if (_l2)
                     {
-                        MoveVector = enemy.transform.TransformDirection(Vector3.right); rota = -90f;
-                    }else if (_r2)
+                        Debug.Log("B");
+                        MoveVector = enemy.transform.TransformDirection(Vector3.right); rota = 90f;
+                    }
+                    else if (_r2)
                     {
+                        Debug.Log("C");
                         rota = 90f; ;
                         MoveVector = enemy.transform.TransformDirection(Vector3.left);
                     }
+                    else
+                    {
+                        Debug.Log("D");
+
+                        MoveVector = enemy.transform.TransformDirection(Vector3.right); rota = 90f;
+                    }
                 }
-                else if (_r) {
+                else if (_r)
+                {
+                    Debug.Log("E");
                     rota = 90f; ;
                     MoveVector = enemy.transform.TransformDirection(Vector3.right); }
                 else
                 {
 
+                    Debug.Log("F");
                     rota = 0f;
                     MoveVector = enemy.transform.TransformDirection(Vector3.forward);
                 }
 
             }
-            else if (_l) { MoveVector = enemy.transform.TransformDirection(Vector3.left); rota = -90f; }
-            else if (_b) { MoveVector = enemy.transform.TransformDirection(Vector3.back); rota = 180f; }
+            else if (_r)
+            {
+                Debug.Log("G2"); MoveVector = enemy.transform.TransformDirection(Vector3.right); rota = 90f;
+            }
+            else if (_l)
+            {
+                Debug.Log("G"); MoveVector = enemy.transform.TransformDirection(Vector3.left); rota = -90f; }
+            else if (_b)
+            {
+                Debug.Log("H"); MoveVector = enemy.transform.TransformDirection(Vector3.back); rota = 180f; }
 
 
 
